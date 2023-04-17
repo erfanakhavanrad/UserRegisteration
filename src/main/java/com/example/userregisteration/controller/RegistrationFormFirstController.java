@@ -1,18 +1,19 @@
 package com.example.userregisteration.controller;
 
 import com.example.userregisteration.model.RegistrationFormFirstModel;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonBooleanFormatVisitor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Erfan Akhavan Rad
@@ -30,14 +31,17 @@ public class RegistrationFormFirstController {
 //    @Value("{spring.datasource.username}")
 //    String user;
 
+    String url = "jdbc:sqlserver://localhost;databaseName=Test_DB" + ";encrypt=true;trustServerCertificate=true";
+    String user = "tiny";
+    String password = "ResidentEvil6";
+
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public JSONObject getAllUsers() throws Exception {
-        String url, user, password, sql, selectAllQuery;
+//        String url, user, password, sql,
+        String selectAllQuery;
 //        int number = 42;
-        url = "jdbc:sqlserver://localhost;databaseName=Test_DB" + ";encrypt=true;trustServerCertificate=true";
-        user = "tiny";
-        password = "ResidentEvil6";
+
 
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
@@ -154,17 +158,6 @@ public class RegistrationFormFirstController {
                 jsonArray.add(record);
             }
             jsonObject.put("usrsData", jsonArray);
-//RegistrationFormFirstModel registrationFormFirstModel = jsonObject;
-//            int count = 0;
-//            while (resultSet.next()) {
-//                count++;
-//                String name = resultSet.getString("userName");
-//                int number2 = resultSet.getInt("number");
-//                System.out.printf("user %d: %s - %d\n", count, name, number2);
-//
-//            }
-
-
             connection.close();
 
         } catch (SQLException e) {
@@ -172,6 +165,49 @@ public class RegistrationFormFirstController {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public void saveSingUser() throws Exception {
+        String url, user, password, sql, selectAllQuery;
+//        int number = 42;
+//        url = "jdbc:sqlserver://localhost;databaseName=Test_DB" + ";encrypt=true;trustServerCertificate=true";
+//        user = "tiny";
+//        password = "ResidentEvil6";
+        List<RegistrationFormFirstModel> list = new ArrayList<>();
+        RegistrationFormFirstModel registrationFormFirstModelSingle = new RegistrationFormFirstModel();
+
+        registrationFormFirstModelSingle.setId(BigDecimal.valueOf(3));
+        registrationFormFirstModelSingle.setName("Erfan");
+        list.add(registrationFormFirstModelSingle);
+
+        String SQL = "INSERT INTO RegistrationFormFirst(id,name) "
+                + "VALUES(?,?)";
+        try (
+                Connection conn = connect();
+                PreparedStatement statement = conn.prepareStatement(SQL);) {
+            int count = 0;
+
+            for (RegistrationFormFirstModel registrationFormFirstModel : list) {
+                statement.setBigDecimal(1, registrationFormFirstModel.getId());
+                statement.setString(2, registrationFormFirstModel.getName());
+
+                statement.addBatch();
+                count++;
+                // execute every 100 rows or less
+                if (count % 100 == 0 || count == list.size()) {
+                    statement.executeBatch();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        System.out.println("I Got Called");
+
+    }
+
+    public Connection connect() throws SQLException {
+        return DriverManager.getConnection(url, user, password);
     }
 
 
