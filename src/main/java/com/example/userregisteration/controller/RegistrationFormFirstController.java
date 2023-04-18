@@ -22,14 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class RegistrationFormFirstController {
-//    @Value("{spring.datasource.url}")
-//    String url;
-//
-//    @Value("{spring.datasource.password}")
-//    String password;
-//
-//    @Value("{spring.datasource.username}")
-//    String user;
 
     String url = "jdbc:sqlserver://localhost;databaseName=Test_DB" + ";encrypt=true;trustServerCertificate=true";
     String user = "tiny";
@@ -157,7 +149,7 @@ public class RegistrationFormFirstController {
                 record.put("iAgreeToTerm", resultSet.getBoolean("iAgreeToTerm"));
                 jsonArray.add(record);
             }
-            jsonObject.put("usrsData", jsonArray);
+            jsonObject.put("usersData", jsonArray);
             connection.close();
 
         } catch (SQLException e) {
@@ -168,7 +160,7 @@ public class RegistrationFormFirstController {
     }
 
     @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public JSONObject saveSingUser(@RequestBody RegistrationFormFirstModel registrationFormFirstModelSingle) throws Exception {
+    public JSONObject saveSingleUser(@RequestBody RegistrationFormFirstModel registrationFormFirstModelSingle) throws Exception {
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         String url, user, password, sql, selectAllQuery, SelectLastIDQuery;
