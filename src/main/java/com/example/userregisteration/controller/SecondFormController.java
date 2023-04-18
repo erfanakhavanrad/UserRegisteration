@@ -539,8 +539,8 @@ public class SecondFormController {
                 }
             }
 
-//            selectAllQuery = "SELECT * FROM RegistrationFormFirst WHERE id = " + registrationFormFirstModelSingle.getId();
-            selectAllQuery = "SELECT * FROM SecondForm WHERE FirstFormID = " + "1";
+            selectAllQuery = "SELECT * FROM RegistrationFormFirst WHERE id = " + lastId.toString();
+//            selectAllQuery = "SELECT * FROM SecondForm WHERE FirstFormID = " + "1";
             Statement statement2 = conn.createStatement();
             ResultSet resultSet = statement2.executeQuery(selectAllQuery);
 
