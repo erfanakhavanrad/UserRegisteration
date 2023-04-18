@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * @created 04/17/2023
  */
 public class RegistrationFormFirstModel {
-private BigDecimal id;
+    private BigDecimal id;
     private String name;
     private String lastName;
     private String fatherName;
